@@ -1,3 +1,4 @@
+//backend/src/routes/admin/settings.route.ts
 import express from "express";
 import {
   getSettings,

@@ -8,9 +8,11 @@ import api from "../../services/axios";
 import { toast } from "react-toastify";
 
 export default function Payment() {
+
   const { showId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+
   const { user } = useAppSelector((state) => state.auth);
 
   const bookingData = location.state;
@@ -26,7 +28,7 @@ export default function Payment() {
     selectedDate,
     selectedTime,
     selectedLanguage,
-    totalPrice,
+    totalPrice
   } = bookingData;
 
   const [paymentMethod, setPaymentMethod] =
@@ -39,19 +41,80 @@ export default function Payment() {
 
   const [processing, setProcessing] = useState(false);
 
+  /* ================= VALIDATION FUNCTIONS ================= */
+
+  const validateUPI = (upi: string) => {
+    const upiRegex = /^[a-zA-Z0-9.\-_]{2,}@[a-zA-Z]{2,}$/;
+    return upiRegex.test(upi);
+  };
+
+  const validateCardNumber = (num: string) => {
+    const clean = num.replace(/\s/g, "");
+    return /^\d{16}$/.test(clean);
+  };
+
+  const validateExpiry = (exp: string) => {
+    const expRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+    return expRegex.test(exp);
+  };
+
+  const validateCVV = (cvv: string) => {
+    return /^\d{3,4}$/.test(cvv);
+  };
+
+  /* ================= FORMAT CARD NUMBER ================= */
+
+  const handleCardChange = (value: string) => {
+    const cleaned = value.replace(/\D/g, "").slice(0, 16);
+
+    const formatted = cleaned
+      .match(/.{1,4}/g)
+      ?.join(" ") || "";
+
+    setCardNumber(formatted);
+  };
+
+  /* ================= PAYMENT ================= */
+
   const handlePayment = async () => {
+
     try {
-      if (paymentMethod === "UPI" && !upiId) {
-        toast.error("Enter UPI ID");
-        return;
+
+      /* ===== UPI VALIDATION ===== */
+
+      if (paymentMethod === "UPI") {
+
+        if (!upiId) {
+          toast.error("Please enter UPI ID");
+          return;
+        }
+
+        if (!validateUPI(upiId)) {
+          toast.error("Invalid UPI ID");
+          return;
+        }
+
       }
 
-      if (
-        paymentMethod === "CARD" &&
-        (!cardNumber || !expiry || !cvv)
-      ) {
-        toast.error("Enter card details");
-        return;
+      /* ===== CARD VALIDATION ===== */
+
+      if (paymentMethod === "CARD") {
+
+        if (!validateCardNumber(cardNumber)) {
+          toast.error("Invalid card number");
+          return;
+        }
+
+        if (!validateExpiry(expiry)) {
+          toast.error("Invalid expiry date (MM/YY)");
+          return;
+        }
+
+        if (!validateCVV(cvv)) {
+          toast.error("Invalid CVV");
+          return;
+        }
+
       }
 
       setProcessing(true);
@@ -66,7 +129,7 @@ export default function Payment() {
         selectedDate,
         selectedTime,
         selectedLanguage,
-        totalAmount: totalPrice,
+        totalAmount: totalPrice
       });
 
       toast.success("Booking Confirmed 🎉");
@@ -74,120 +137,172 @@ export default function Payment() {
       navigate(`/my-bookings/${res.data.booking._id}`);
 
     } catch (error: any) {
+
       toast.error(
         error.response?.data?.message ||
-          "Payment failed ❌"
+        "Payment failed ❌"
       );
+
     } finally {
+
       setProcessing(false);
+
     }
+
   };
 
   return (
+
     <PageContainer>
-      <div className="max-w-6xl mx-auto p-8 grid grid-cols-1 lg:grid-cols-2 gap-10">
 
-        {/* BOOKING SUMMARY */}
-        <div className="border p-6 rounded-xl shadow">
-          <h2 className="text-xl font-semibold mb-4">
-            Booking Summary
-          </h2>
+      <div className="max-w-6xl mx-auto p-8">
 
-          <p><strong>Name:</strong> {user?.name}</p>
-          <p><strong>Email:</strong> {user?.email}</p>
+        {/* BACK BUTTON */}
 
-          <p><strong>Movie:</strong> {movieTitle}</p>
-          <p><strong>Date:</strong> {selectedDate}</p>
-          <p><strong>Time:</strong> {selectedTime}</p>
-          <p><strong>Language:</strong> {selectedLanguage}</p>
-          <p><strong>Seats:</strong> {selectedSeats.join(", ")}</p>
-          <p className="mt-3 font-bold">
-            Total: ₹{totalPrice}
-          </p>
-        </div>
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 text-red-600 font-semibold hover:underline"
+        >
+          ← Back
+        </button>
 
-        {/* PAYMENT SECTION */}
-        <div className="border p-6 rounded-xl shadow">
-          <h2 className="text-xl font-semibold mb-4">
-            Payment
-          </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
-          {/* Payment Method Selection */}
-          <div className="flex gap-4 mb-4">
-            <button
-              onClick={() => setPaymentMethod("UPI")}
-              className={`px-4 py-2 rounded ${
-                paymentMethod === "UPI"
-                  ? "bg-red-600 text-white"
-                  : "bg-gray-200"
-              }`}
-            >
-              UPI
-            </button>
+          {/* ================= BOOKING SUMMARY ================= */}
 
-            <button
-              onClick={() => setPaymentMethod("CARD")}
-              className={`px-4 py-2 rounded ${
-                paymentMethod === "CARD"
-                  ? "bg-red-600 text-white"
-                  : "bg-gray-200"
-              }`}
-            >
-              Debit / Credit Card
-            </button>
+          <div className="border p-6 rounded-xl shadow">
+
+            <h2 className="text-xl font-semibold mb-4">
+              Booking Summary
+            </h2>
+
+            <p><strong>Name:</strong> {user?.name}</p>
+            <p><strong>Email:</strong> {user?.email}</p>
+
+            <p><strong>Movie:</strong> {movieTitle}</p>
+            <p><strong>Date:</strong> {selectedDate}</p>
+            <p><strong>Time:</strong> {selectedTime}</p>
+            <p><strong>Language:</strong> {selectedLanguage}</p>
+            <p><strong>Seats:</strong> {selectedSeats.join(", ")}</p>
+
+            <p className="mt-3 font-bold text-lg">
+              Total: ₹{totalPrice}
+            </p>
+
           </div>
 
-          {/* UPI */}
-          {paymentMethod === "UPI" && (
-            <input
-              type="text"
-              placeholder="Enter UPI ID"
-              value={upiId}
-              onChange={(e) => setUpiId(e.target.value)}
-              className="w-full p-3 border rounded mb-4"
-            />
-          )}
+          {/* ================= PAYMENT SECTION ================= */}
 
-          {/* CARD */}
-          {paymentMethod === "CARD" && (
-            <>
+          <div className="border p-6 rounded-xl shadow">
+
+            <h2 className="text-xl font-semibold mb-4">
+              Payment Method
+            </h2>
+
+            {/* METHOD SELECT */}
+
+            <div className="flex gap-4 mb-6">
+
+              <button
+                onClick={() => setPaymentMethod("UPI")}
+                className={`px-4 py-2 rounded ${
+                  paymentMethod === "UPI"
+                    ? "bg-red-600 text-white"
+                    : "bg-gray-200"
+                }`}
+              >
+                UPI
+              </button>
+
+              <button
+                onClick={() => setPaymentMethod("CARD")}
+                className={`px-4 py-2 rounded ${
+                  paymentMethod === "CARD"
+                    ? "bg-red-600 text-white"
+                    : "bg-gray-200"
+                }`}
+              >
+                Debit / Credit Card
+              </button>
+
+            </div>
+
+            {/* ================= UPI ================= */}
+
+            {paymentMethod === "UPI" && (
+
               <input
                 type="text"
-                placeholder="Card Number"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-                className="w-full p-3 border rounded mb-3"
+                placeholder="example@upi"
+                value={upiId}
+                onChange={(e) => setUpiId(e.target.value)}
+                className="w-full p-3 border rounded mb-4"
               />
 
-              <div className="flex gap-3">
+            )}
+
+            {/* ================= CARD ================= */}
+
+            {paymentMethod === "CARD" && (
+
+              <>
+
                 <input
                   type="text"
-                  placeholder="MM/YY"
-                  value={expiry}
-                  onChange={(e) => setExpiry(e.target.value)}
-                  className="w-1/2 p-3 border rounded"
+                  placeholder="Card Number"
+                  value={cardNumber}
+                  onChange={(e) => handleCardChange(e.target.value)}
+                  className="w-full p-3 border rounded mb-3"
                 />
 
-                <input
-                  type="password"
-                  placeholder="CVV"
-                  value={cvv}
-                  onChange={(e) => setCvv(e.target.value)}
-                  className="w-1/2 p-3 border rounded"
-                />
-              </div>
-            </>
-          )}
+                <div className="flex gap-3 mb-3">
 
-          <button
-            onClick={handlePayment}
-            disabled={processing}
-            className="mt-6 w-full py-3 rounded bg-red-600 text-white"
-          >
-            {processing ? "Processing..." : "Confirm Booking"}
-          </button>
+                  <input
+                    type="text"
+                    placeholder="MM/YY"
+                    value={expiry}
+                    onChange={(e) =>
+                      setExpiry(e.target.value)
+                    }
+                    className="w-1/2 p-3 border rounded"
+                  />
+
+                  <input
+                    type="password"
+                    placeholder="CVV"
+                    value={cvv}
+                    onChange={(e) =>
+                      setCvv(e.target.value)
+                    }
+                    className="w-1/2 p-3 border rounded"
+                  />
+
+                </div>
+
+              </>
+
+            )}
+
+            {/* ================= PAY BUTTON ================= */}
+
+            <button
+              onClick={handlePayment}
+              disabled={processing}
+              className="mt-4 w-full py-3 rounded bg-red-600 text-white hover:bg-red-700"
+            >
+              {processing
+                ? "Processing..."
+                : "Confirm Booking"}
+            </button>
+
+          </div>
+
         </div>
+
       </div>
+
     </PageContainer>
+
   );
+
 }

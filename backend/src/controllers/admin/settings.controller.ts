@@ -1,3 +1,4 @@
+//backend/src/controllers/admin/settings.controller.ts
 import { Request, Response } from "express";
 import Settings from "../../models/Settings.model";
 

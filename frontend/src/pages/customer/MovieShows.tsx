@@ -55,6 +55,15 @@ export default function MovieShows() {
   return (
     <PageContainer>
       <div className="max-w-5xl mx-auto py-12 px-6">
+         {/* BACK BUTTON */}
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 mb-6 text-sm font-medium hover:text-red-500 transition"
+          style={{ color: "var(--text-color)" }}
+        >
+          <span className="text-xl">←</span>
+          Back
+        </button>
 
         <h1 className="text-3xl font-bold mb-8">
           Select Show

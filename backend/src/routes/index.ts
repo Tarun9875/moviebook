@@ -14,52 +14,27 @@ import settingsRoutes from "./admin/settings.route";
 
 const router = Router();
 
-/* =====================================================
-   AUTH ROUTES
-   /api/auth
-===================================================== */
+/* AUTH */
 router.use("/auth", authRoutes);
 
-/* =====================================================
-   BOOKING ROUTES
-   /api/bookings
-===================================================== */
+/* BOOKINGS */
 router.use("/bookings", bookingRoutes);
 
-/* =====================================================
-   MOVIE ROUTES
-   /api/movies
-===================================================== */
+/* MOVIES */
 router.use("/movies", movieRoutes);
 
-/* =====================================================
-   ADMIN ROUTES
-   /api/admin
-===================================================== */
-router.use("/admin", adminRoutes);
+/* PUBLIC SETTINGS (MUST COME BEFORE ADMIN) */
+router.use("/admin", settingsRoutes);
 
-/* =====================================================
-   SHOW ROUTES
-   IMPORTANT ORDER (keep together)
-   /api/shows
-===================================================== */
+/* ADMIN ROUTES */
+router.use("/admin", adminRoutes);
+router.use("/admin", reportsRoutes);
+
+/* SHOWS */
 router.use("/shows", showRoutes);
 router.use("/shows", showSeatsRoutes);
 
-/* =====================================================
-   USER ROUTES
-   /api/users
-===================================================== */
+/* USERS */
 router.use("/users", userRoutes);
-/* =====================================================
-   REPORTS ROUTES
-   /api/admin/reports
-===================================================== */
-router.use("/admin", reportsRoutes);
-/* =====================================================
-   SETTINGS ROUTES
-   /api/admin/settings
-===================================================== */
-router.use("/admin", settingsRoutes);
 
 export default router;

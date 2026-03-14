@@ -1,8 +1,11 @@
-//backend/src/controllers/admin/reports.controller.ts
+// backend/src/controllers/admin/reports.controller.ts
+
 import { Request, Response } from "express";
 import Booking from "../../models/Booking.model";
 
-/* ================= ADMIN REPORT ================= */
+/* =====================================================
+   ADMIN REPORTS
+===================================================== */
 
 export const getAdminReports = async (req: Request, res: Response) => {
   try {
@@ -28,7 +31,7 @@ export const getAdminReports = async (req: Request, res: Response) => {
     /* ================= TOTAL REVENUE ================= */
 
     const totalRevenue = bookings.reduce(
-      (sum: number, b: any) => sum + (b.totalAmount || 0),
+      (sum: number, booking: any) => sum + (booking.totalAmount || 0),
       0
     );
 
@@ -66,16 +69,19 @@ export const getAdminReports = async (req: Request, res: Response) => {
     /* ================= RESPONSE ================= */
 
     res.json({
+      success: true,
+      totalRevenue,
       bookings,
       movieRevenue,
-      trend,
-      totalRevenue
+      trend
     });
 
   } catch (error) {
+
     console.error("Reports Error:", error);
 
     res.status(500).json({
+      success: false,
       message: "Failed to generate reports"
     });
   }
