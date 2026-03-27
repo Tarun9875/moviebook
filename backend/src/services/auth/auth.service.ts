@@ -1,4 +1,3 @@
-//backend/src/services/auth/auth.service.ts
 import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 import User from "../../models/User.model";
@@ -42,6 +41,7 @@ export const registerUser = async (data: any) => {
     });
 
     return user;
+
   } catch (error: any) {
     logError("Register error", error.message);
     throw error;
@@ -77,7 +77,10 @@ export const loginUser = async (email: string, password: string) => {
       "7d"
     );
 
-    await redis.set(`auth:${user._id}`, accessToken, { EX: 3600 });
+    /* ✅ FIX: SAFE REDIS USAGE */
+    if (redis) {
+      await redis.set(`auth:${user._id}`, accessToken, { EX: 3600 });
+    }
 
     logSuccess("User logged in successfully", {
       userId: user._id.toString(),
@@ -94,6 +97,7 @@ export const loginUser = async (email: string, password: string) => {
       accessToken,
       refreshToken
     };
+
   } catch (error: any) {
     logError("Login error", error.message);
     throw error;
@@ -149,7 +153,10 @@ export const googleLoginUser = async (googleToken: string) => {
       "7d"
     );
 
-    await redis.set(`auth:${user._id}`, accessToken, { EX: 3600 });
+    /* ✅ FIX: SAFE REDIS USAGE */
+    if (redis) {
+      await redis.set(`auth:${user._id}`, accessToken, { EX: 3600 });
+    }
 
     logSuccess("Google login successful", {
       userId: user._id.toString(),

@@ -1,20 +1,33 @@
-//backend/src/config/redis.ts
 import { createClient } from "redis";
 
-const redis = createClient({
-  url: "redis://127.0.0.1:6379"
-});
+let redis: ReturnType<typeof createClient> | null = null;
 
-redis.on("connect", () => {
-  console.log("✅ Redis connected");
-});
+const redisUrl = process.env.REDIS_URL;
 
-redis.on("error", (err) => {
-  console.error("❌ Redis error", err);
-});
+/* ================= INIT REDIS ================= */
 
-(async () => {
-  await redis.connect();
-})();
+if (redisUrl) {
+  redis = createClient({
+    url: redisUrl,
+  });
+
+  redis.on("connect", () => {
+    console.log("✅ Redis connected");
+  });
+
+  redis.on("error", (err) => {
+    console.error("❌ Redis error:", err.message);
+  });
+
+  (async () => {
+    try {
+      await redis!.connect();
+    } catch (err) {
+      console.log("⚠️ Redis connection failed");
+    }
+  })();
+} else {
+  console.log("⚠️ Redis disabled (no REDIS_URL)");
+}
 
 export default redis;
