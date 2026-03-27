@@ -1,3 +1,4 @@
+//backend/src/utils/logger.ts
 export const logInfo = (message: string, data?: any) => {
   console.log(`ℹ️  ${message}`, data || "");
 };

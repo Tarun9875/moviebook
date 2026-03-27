@@ -1,3 +1,4 @@
+//frontend/src/pages/customer/Home.tsx
 import { useEffect, useState } from "react";
 import api from "../../services/axios";
 

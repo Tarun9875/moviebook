@@ -1,3 +1,4 @@
+//frontend/src/components/sliders/HeroSlider.tsx
 import { useNavigate } from "react-router-dom";
 
 const featuredMovies = [

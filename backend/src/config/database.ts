@@ -1,3 +1,4 @@
+//backend/src/config/database.ts
 import mongoose from "mongoose";
 
 const MONGO_URI = "mongodb+srv://18patel70:Tarun9875@cluster0.3ax6icx.mongodb.net";

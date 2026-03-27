@@ -1,3 +1,4 @@
+//frontend/src/pages/customer/Contact.tsx
 import { useState } from "react";
 import PageContainer from "../../components/layout/PageContainer";
 import { motion } from "framer-motion";

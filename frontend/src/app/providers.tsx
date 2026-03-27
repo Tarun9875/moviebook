@@ -1,3 +1,4 @@
+//frontend/src/app/providers.tsx
 import { useEffect } from "react";
 import { useAppSelector } from "./hooks";
 

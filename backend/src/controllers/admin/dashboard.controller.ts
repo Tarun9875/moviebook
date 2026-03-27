@@ -1,3 +1,4 @@
+//backend/src/controllers/admin/dashboard.controller.ts
 import { Request, Response } from "express";
 import Movie from "../../models/Movie.model";
 import User from "../../models/User.model";

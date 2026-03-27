@@ -1,3 +1,4 @@
+//frontend/src/features/auth/authSlice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { loginAPI, registerAPI } from "./authAPI";

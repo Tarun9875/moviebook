@@ -1,22 +1,12 @@
 // backend/src/middlewares/auth/auth.middleware.ts
-
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 import { verifyAccessToken } from "../../utils/jwt";
 import User from "../../models/User.model";
 
-/* =====================================================
-   AUTH PROTECT MIDDLEWARE
-===================================================== */
-
-export const protect = async (
-  req: any,
-  res: Response,
-  next: NextFunction
-) => {
+export const protect: RequestHandler = async (req: any, res, next) => {
   try {
     let token: string | undefined;
 
-    /* ================= GET TOKEN ================= */
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer ")
@@ -31,17 +21,8 @@ export const protect = async (
       });
     }
 
-    /* ================= VERIFY TOKEN ================= */
     const decoded: any = verifyAccessToken(token);
 
-    if (!decoded || !decoded.id) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid token payload",
-      });
-    }
-
-    /* ================= CHECK USER EXISTS ================= */
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) {
@@ -51,17 +32,14 @@ export const protect = async (
       });
     }
 
-    /* ================= ATTACH USER TO REQUEST ================= */
     req.user = {
       id: user._id.toString(),
-      role: user.role?.toUpperCase(), // 🔥 normalize role
+      role: user.role?.toUpperCase(),
       email: user.email,
     };
 
     next();
   } catch (error) {
-    console.error("Protect Middleware Error:", error);
-
     return res.status(401).json({
       success: false,
       message: "Invalid or expired token",

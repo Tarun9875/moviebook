@@ -1,3 +1,4 @@
+//frontend/src/pages/admin/Movies.tsx
 import { useEffect, useState } from "react";
 import api from "../../services/axios";
 import { Link } from "react-router-dom";

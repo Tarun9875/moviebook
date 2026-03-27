@@ -1,8 +1,6 @@
-// backend/src/routes/admin/admin.routes.ts
-
 import { Router } from "express";
 import { protect } from "../../middlewares/auth/auth.middleware";
-import { roleMiddleware } from "../../middlewares/role/role.middleware";
+import { isAdmin } from "../../middlewares/auth/role.middleware"; // ✅ FIXED IMPORT
 
 import {
   adminDashboard,
@@ -28,7 +26,7 @@ const router = Router();
 ===================================================== */
 
 router.use(protect);
-router.use(roleMiddleware(["ADMIN"]));
+router.use(isAdmin);
 
 /* =====================================================
    📊 DASHBOARD

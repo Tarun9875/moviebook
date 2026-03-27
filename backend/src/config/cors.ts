@@ -1,3 +1,4 @@
+//from backend/src/config/cors.ts
 import cors from "cors";
 
 const corsOptions = {

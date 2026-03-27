@@ -1,3 +1,4 @@
+//frontend/src/pages/customer/About.tsx
 import PageContainer from "../../components/layout/PageContainer";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";

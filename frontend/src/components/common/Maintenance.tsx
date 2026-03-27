@@ -1,3 +1,4 @@
+//frontend/src/components/common/Maintenance.tsx
 export default function Maintenance() {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-black text-white text-center">
