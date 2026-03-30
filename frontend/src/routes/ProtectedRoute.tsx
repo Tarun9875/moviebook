@@ -1,11 +1,10 @@
 // src/routes/ProtectedRoute.tsx
 
-import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
 
 interface Props {
-  children: JSX.Element;
+  children: React.ReactNode;
   role?: string;
 }
 
@@ -13,7 +12,7 @@ export default function ProtectedRoute({ children, role }: Props) {
   const { user } = useAppSelector((state) => state.auth);
   const location = useLocation();
 
-  // Not logged in
+  /* ================= NOT LOGGED IN ================= */
   if (!user) {
     return (
       <Navigate
@@ -24,10 +23,11 @@ export default function ProtectedRoute({ children, role }: Props) {
     );
   }
 
-  // Role protection (for admin)
+  /* ================= ROLE CHECK ================= */
   if (role && user.role !== role) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  return children;
+  /* ================= ACCESS GRANTED ================= */
+  return <>{children}</>;
 }
